@@ -1,0 +1,21 @@
+name: Publicar release assinada
+# Ao empurrar uma tag vX.Y.Z, cria a Release com o pacote ASSINADO que está em releases/vX.Y.Z/ (gerado e assinado no PC do fornecedor).
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Criar a Release com os dois arquivos
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VER="${GITHUB_REF_NAME#v}"
+          DIR="releases/v${VER}"
+          test -f "$DIR/wellsystem-${VER}.tar.gz" || { echo "faltou $DIR/wellsystem-${VER}.tar.gz"; exit 1; }
+          test -f "$DIR/wellsystem-${VER}.tar.gz.sig" || { echo "faltou $DIR/wellsystem-${VER}.tar.gz.sig"; exit 1; }
+          gh release create "$GITHUB_REF_NAME" "$DIR/wellsystem-${VER}.tar.gz" "$DIR/wellsystem-${VER}.tar.gz.sig" --title "WellSystem ${VER}" --notes "Pacote assinado do WellSystem ${VER}. Os servidores só aplicam pacote com a assinatura do fornecedor."
