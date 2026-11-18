@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Criar a Release com os dois arquivos
+      - name: Criar a Release com os pacotes de todas as edições (completo, erp, olt, fiscal)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -18,4 +18,4 @@ jobs:
           DIR="releases/v${VER}"
           test -f "$DIR/wellsystem-${VER}.tar.gz" || { echo "faltou $DIR/wellsystem-${VER}.tar.gz"; exit 1; }
           test -f "$DIR/wellsystem-${VER}.tar.gz.sig" || { echo "faltou $DIR/wellsystem-${VER}.tar.gz.sig"; exit 1; }
-          gh release create "$GITHUB_REF_NAME" "$DIR/wellsystem-${VER}.tar.gz" "$DIR/wellsystem-${VER}.tar.gz.sig" --title "WellSystem ${VER}" --notes "Pacote assinado do WellSystem ${VER}. Os servidores só aplicam pacote com a assinatura do fornecedor."
+          gh release create "$GITHUB_REF_NAME" "$DIR"/wellsystem-${VER}*.tar.gz "$DIR"/wellsystem-${VER}*.tar.gz.sig --title "WellSystem ${VER}" --notes "Pacote assinado do WellSystem ${VER}. Os servidores só aplicam pacote com a assinatura do fornecedor."
